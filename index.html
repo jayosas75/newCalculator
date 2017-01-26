@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculator</title>
+    <style>
+        #structure {
+            border: 5px solid darkslategray;
+            width: 475px;
+
+        }
+        #output {
+            height: 15vh;
+            width: 90%;
+            margin: 5% auto;
+            font-size: xx-large;
+            text-align: right;
+            padding: 2px;
+        }
+        #clear_buttons_area {
+            margin-left: 2%;
+        }
+
+        #clear_single, #clear_all {
+            height: 90px;
+            width: 150px;
+            background-color: slategray;
+        }
+
+        #numbers_buttons_area {
+            width: 322px;
+            margin-left: 2.5%;
+            margin-bottom: 10px;
+        }
+
+        .numbers_buttons {
+            height: 85px;
+            width: 100px;
+            background-color: royalblue;
+            margin: 2px;
+        }
+
+        #operator_buttons_area {
+            width: 120px;
+            float: right;
+            margin-right: 10px;
+        }
+
+        .operator_buttons {
+            width: 120px;
+            height: 109px;
+            font-size: 30px;
+        }
+        @media only screen and (max-width: 500px) {
+            #structure {
+                width: 100%;
+            }
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="http://Learning-Fuze.github.io/calculator/calculator.js"></script>
+    <script src="script.js"></script>
+</head>
+<body>
+
+<div id="structure">
+    <div id="output" class="panel panel-primary">
+
+    </div>
+
+    <div id='clear_buttons_area' class="btn-group" role="group" aria-label="...">
+        <button id='clear_single' type="button" class="btn btn-default">C</button>
+        <button id="clear_all" type="button" class="btn btn-default">CE</button>
+    </div>
+
+    <div id="operator_buttons_area" class="btn-group" role="group" aria-label="...">
+        <button type="button" class="btn-default operator_buttons">/</button>
+        <button type="button" class="btn-default operator_buttons">*</button>
+        <button type="button" class="btn-default operator_buttons">-</button>
+        <button type="button" class="btn-default operator_buttons">+</button>
+    </div>
+
+    <div id="numbers_buttons_area" class="btn-group" role="group" aria-label="...">
+        <button type="button" class="btn btn-default numbers_buttons">7</button>
+        <button type="button" class="btn btn-default numbers_buttons">8</button>
+        <button type="button" class="btn btn-default numbers_buttons">9</button>
+        <button type="button" class="btn btn-default numbers_buttons">4</button>
+        <button type="button" class="btn btn-default numbers_buttons">5</button>
+        <button type="button" class="btn btn-default numbers_buttons">6</button>
+        <button type="button" class="btn btn-default numbers_buttons">1</button>
+        <button type="button" class="btn btn-default numbers_buttons">2</button>
+        <button type="button" class="btn btn-default numbers_buttons">3</button>
+        <button type="button" class="btn btn-default numbers_buttons">0</button>
+        <button type="button" class="btn btn-default numbers_buttons">.</button>
+        <button type="button" class="btn btn-default numbers_buttons">=</button>
+    </div>
+
+</div>
+
+</body>
+</html>
