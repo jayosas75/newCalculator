@@ -63,13 +63,227 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <!--<script src="http://Learning-Fuze.github.io/calculator/calculator.js"></script>-->
-    <script src="script.js"></script>
+    <script>
+        $(document).ready(function(){
+            console.log('page loaded and ready');
+            $('button').click(button_clicked);
+        });
+        //placeholder for index
+        var index = 0;
+        //placeholder for array to be calculated
+        var inputs_array = [{
+            type: undefined,
+            value: ''
+        }];
+        //placeholder for last input, should be equal sign
+        var last_input = null;
+
+        function button_clicked(){
+            //assigning value of clicked element to variable for argument use in functions
+            var clicked_value = $(this).text();
+            switch(clicked_value){
+                case 'C':
+                    console.log('clear all clicked');
+                    delete_all();
+                    break;
+                case 'CE':
+                    console.log('clear last entry');
+                    delete_one();
+                    break;
+                case '=':
+                    console.log('equal button hit');
+                    equate();
+                    break;
+                default:
+                    add_item(clicked_value);
+            }
+        }
+
+        function add_item(string_value) {
+            if(string_value === '+'){
+                index++;
+                new_obj();
+
+                add_operator('+');
+            }
+            //convert string value to number if not operator
+            if (isNaN(parseFloat(string_value)) && string_value !== '.') {
+                add_operator(string_value);
+            } else  {
+                //exit out of function if 2 '.' are entered in a row
+                if (string_value === '.' && (inputs_array[index].value.indexOf('.') !== -1)) {
+                    return;
+                }
+                //update type and value of new array item and display to output area
+                inputs_array[index].type = 'number';
+                inputs_array[index].value += string_value;
+                display(inputs_array[index]);
+            }
+        }
+
+        function add_operator(string_value){
+            // if number is clicked update index to new value and add index for next operator
+            if(inputs_array[index].type === 'number'){
+                index++;
+                new_obj();
+                inputs_array[index].value = string_value;
+                //adding in operator if not equal sign and add index for next number
+                if(string_value !== '='){
+                    inputs_array[index].type = 'operator';
+                    display(inputs_array[index]);
+                    index++;
+                    new_obj();
+                }
+            }else if(inputs_array[index-1].type === 'operator' && string_value !== '=') {
+                //changing operator if one was input on the previous click
+                inputs_array[index - 1].value = string_value;
+                display(inputs_array[index-1]);
+                console.log("changing the operator");
+            }
+        }
+
+        function equate() {
+            if (inputs_array[index].value === '=' || inputs_array[index] === '1') {
+                console.log('equal button hit again.');
+                display(order_of_operation(string_to_float(last_input)));
+                index++;
+                new_obj();
+                last_input = inputs_array.slice(index - 2);
+                if (inputs_array[index - 1].value === '=') {
+                    last_input[1].value = '+';
+                    last_input[2].value = 1;
+                }
+            } else {
+                last_input = inputs_array.slice(index - 2);
+                display(order_of_operation(string_to_float(inputs_array)));
+                index--;
+                new_obj();
+                inputs_array[index].value = '=';
+            }
+        }
+
+        //return result of operation based on operator sign
+        function do_math(num1, num2, operator){
+            var result = null;
+            switch(operator){
+                case 'x':
+                    if(num2 === undefined){
+                        num2 = num1;
+                    }
+                    result = num1 * num2;
+                    return result;
+                    break;
+                case '/':
+                    if(num2 == 0){
+                        return 'error';
+                    }else{
+                        result = num1 / num2;
+                    }
+                    return result;
+                    break;
+                case '+':
+                    result = num1 + num2;
+                    return result;
+                    break;
+                case '-':
+                    result = num1 - num2;
+                    return result;
+                    break;
+            }
+        }
+
+        //reset all globals and prep obj
+        function delete_all(){
+            var clear_all = {type: 'C'};
+            inputs_array = [];
+            index = 0;
+            new_obj();
+            display(clear_all);
+        }
+
+        //delete current entry
+        function delete_one(){
+            if(inputs_array[index].type === 'number'){//clear out current number entered
+                inputs_array[index].value = '';
+                display(inputs_array[index]);
+            }
+        }
+
+        //creates new obj in the current array index
+        //prep value property with empty for concatenating number
+        function new_obj(){
+            inputs_array[index] = {};
+            inputs_array[index].value = '';
+        }
+
+        //Loops through array of objects looking for type 'number' and converting to floats
+        function string_to_float(array){
+            for(var i = 0; i < array.length; i++){
+                if(array[i].type === 'number'){
+                    array[i].value = parseFloat(array[i].value);
+                }
+            }
+            return array;
+        }
+
+        function display(obj){
+            switch(obj.type){
+                case 'C':
+                    $("#output").text('');
+                    break;
+                case 'number':
+                case 'operator':
+                    $("#output").text(obj.value);
+                    break;
+            }
+        }
+
+        //looks for x and / first then + and - and returns result after entire array has been calculated
+        function order_of_operation(array){
+            var result = null;
+            //search for  multi and division first
+            for(var i = 0; i < array.length; i++){
+                if (array[i].value == 'x' || array[i].value == '/') {
+                    //grab num1, num2, and operator for do_math function
+                    result = do_math(array[i - 1].value, array[i + 1].value, array[i].value);
+                    //if divided by zero
+                    if(result === 'error'){
+                        array[0].value = result;
+                        return array[0];
+                    }
+                    //after result change array to more simple math equation
+                    array[i - 1].value = 0;
+                    array[i].value = '+';
+                    array[i + 1].value = result;
+                }
+            }
+            console.log("multiplication and division solved and condensed to new array: ", array);
+
+            while(array.length > 2){
+                //breaks down long equation and does it piece by piece
+                var add_and_subtract = array.splice(0,3);
+                add_and_subtract[0].value = do_math(add_and_subtract[0].value, add_and_subtract[2].value, add_and_subtract[1].value);
+
+                array.unshift(add_and_subtract[0]);
+            }
+            console.log("Addition/Subtraction done: ", array, ' length: ', array.length);
+            //floated numbers will have 10 decimal spots
+            if(array[0].value % 1 !== 0){
+                array[0].value = array[0].value.toFixed(10);
+            }
+            //reset place index after shortening of array
+            /*index = array.length-1;*/
+            return array[0];
+        }
+    </script>
 </head>
 <body>
 
 <div id="structure">
-    <div id="output">
+    <div id="display">
+        <div id="output">
 
+        </div>
     </div>
 
     <div id='clear_buttons_area' class="btn-group" role="group" aria-label="...">
@@ -78,25 +292,25 @@
     </div>
 
     <div id="operator_buttons_area" class="btn-group" role="group" aria-label="...">
-        <button type="button" class="btn btn-default operator_button">/</button>
-        <button type="button" class="btn btn-default operator_button">*</button>
-        <button type="button" class="btn btn-default operator_button">-</button>
-        <button type="button" class="btn btn-default operator_button">+</button>
+        <button class="btn btn-default operator_button">/</button>
+        <button class="btn btn-default operator_button">x</button>
+        <button class="btn btn-default operator_button">-</button>
+        <button class="btn btn-default operator_button">+</button>
     </div>
 
     <div id="numbers_buttons_area" class="btn-group" role="group" aria-label="...">
-        <button type="button" value="7" class="btn btn-default number_button">7</button>
-        <button type="button" value="8" class="btn btn-default number_button">8</button>
-        <button type="button" value="9" class="btn btn-default number_button">9</button>
-        <button type="button" value="4" class="btn btn-default number_button">4</button>
-        <button type="button" value="5" class="btn btn-default number_button">5</button>
-        <button type="button" value="6" class="btn btn-default number_button">6</button>
-        <button type="button" value="1" class="btn btn-default number_button">1</button>
-        <button type="button" value="2" class="btn btn-default number_button">2</button>
-        <button type="button" value="3" class="btn btn-default number_button">3</button>
-        <button type="button" value="0" class="btn btn-default number_button">0</button>
-        <button type="button" value="." class="btn btn-default decimal_button">.</button>
-        <button type="button" value="=" class="btn btn-default equate_button">=</button>
+        <button class="btn btn-default number_button">7</button>
+        <button class="btn btn-default number_button">8</button>
+        <button class="btn btn-default number_button">9</button>
+        <button class="btn btn-default number_button">4</button>
+        <button class="btn btn-default number_button">5</button>
+        <button class="btn btn-default number_button">6</button>
+        <button class="btn btn-default number_button">1</button>
+        <button class="btn btn-default number_button">2</button>
+        <button class="btn btn-default number_button">3</button>
+        <button class="btn btn-default number_button">0</button>
+        <button class="btn btn-default decimal_button">.</button>
+        <button class="btn btn-default equate_button">=</button>
     </div>
 
 </div>
