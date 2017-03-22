@@ -122,36 +122,24 @@
         }
 
         function add_operator(string_value){
-            //LFZ START
             // if number is clicked update index to new value and add index for next operator
-
-                //increase index of main array
-
-                //prepare new index with '' and updates main array
-
-                //assign empty string to clicked value
-
-                //adding in operator if not equal sign with if statement
-
-                        //if empty string index isnt a number add as operator
-
-                        //display new clicked operator
-
-                        //increase index for next upcoming click
-
-                        //prepare new index with '' and updates main array
-
-
+            if(inputs_array[index].type === 'number'){
+                index++;
+                new_obj();
+                inputs_array[index].value = string_value;
+                //adding in operator if not equal sign and add index for next number
+                if(string_value !== '='){
+                    inputs_array[index].type = 'operator';
+                    display(inputs_array[index]);
+                    index++;
+                    new_obj();
+                }
+            }else if(inputs_array[index-1].type === 'operator' && string_value !== '=') {
                 //changing operator if one was input on the previous click
-
-                //changes newly clicked operator into new clicked value
-
-                //display new operator to output div
-
-                //log that operator has been changed from its original value
-
-
-            //LFZ END
+                inputs_array[index - 1].value = string_value;
+                display(inputs_array[index-1]);
+                console.log("changing the operator");
+            }
         }
 
         function equate() {
@@ -251,55 +239,41 @@
         }
 
         //looks for x and / first then + and - and returns result after entire array has been calculated
-        function order_of_operation(array) {
-            //LFZ START
-            //set variable to keep track of result of do_math
+        function order_of_operation(array){
+            var result = null;
+            //search for  multi and division first
+            for(var i = 0; i < array.length; i++){
+                if (array[i].value == 'x' || array[i].value == '/') {
+                    //grab num1, num2, and operator for do_math function
+                    result = do_math(array[i - 1].value, array[i + 1].value, array[i].value);
+                    //if divided by zero
+                    if(result === 'error'){
+                        array[0].value = result;
+                        return array[0];
+                    }
+                    //after result change array to more simple math equation
+                    array[i - 1].value = 0;
+                    array[i].value = '+';
+                    array[i + 1].value = result;
+                }
+            }
+            console.log("multiplication and division solved and condensed to new array: ", array);
 
-            //create loop to go through main array
+            while(array.length > 2){
+                //breaks down long equation and does it piece by piece
+                var add_and_subtract = array.splice(0,3);
+                add_and_subtract[0].value = do_math(add_and_subtract[0].value, add_and_subtract[2].value, add_and_subtract[1].value);
 
-            //search for  multiplication and division first
-
-            //grab num1, num2, and operator for do_math function
-
-            //check if any number is * or / by 0
-
-            //change error message to return as 0
-
-            //exit function and return main array as 0
-
-
-            //set previous first number to 0 for easy addition/subtraction
-
-            //set previous operator from '*' or '/' to '+'
-
-            //set 2nd number in first operation to the result of operation
-
-            //doing this will change a problem like 3 * 3 to 0 + 9
-
-
-            //log that all multiplication and division have been solved, show new array and can move onto addition and subtraction
-
-
-            //create loop to keep doing math until there is not longer 3 items in the main array
-
-                //create new array to take an array and separate first 3 array items to do math
-
-                //change index 0 of new array to whatever is the outcome of the math being done. example: [3 + 2] changes to [5]
-
-                //add new single value to main array(inputs_array)
-
-
-            //log that addition and subtraction have been completed and show new array
-
-            //find if single array item has decimals involved
-
-                //change decimal spot to change to 10 behind the decimal
-
-            //reset place index after shortening of array ---- ignore
+                array.unshift(add_and_subtract[0]);
+            }
+            console.log("Addition/Subtraction done: ", array, ' length: ', array.length);
+            //floated numbers will have 10 decimal spots
+            if(array[0].value % 1 !== 0){
+                array[0].value = array[0].value.toFixed(10);
+            }
+            //reset place index after shortening of array
             /*index = array.length-1;*/
-            //return main array to order of ops function
-
-            //LFZ END
+            return array[0];
         }
     </script>
 </head>
@@ -342,4 +316,5 @@
 </div>
 
 </body>
+
 </html>
