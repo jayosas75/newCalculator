@@ -100,12 +100,6 @@
         }
 
         function add_item(string_value) {
-            if(string_value === '+'){
-                index++;
-                new_obj();
-
-                add_operator('+');
-            }
             //convert string value to number if not operator
             if (isNaN(parseFloat(string_value)) && string_value !== '.') {
                 add_operator(string_value);
@@ -129,6 +123,7 @@
                 inputs_array[index].value = string_value;
                 //adding in operator if not equal sign and add index for next number
                 if(string_value !== '='){
+                    debugger;
                     inputs_array[index].type = 'operator';
                     display(inputs_array[index]);
                     index++;
@@ -182,6 +177,7 @@
                     return result;
                     break;
                 case '+':
+                    debugger;
                     result = num1 + num2;
                     return result;
                     break;
