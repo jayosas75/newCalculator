@@ -30,6 +30,7 @@
             height: 90px;
             width: 50%;
             background-color: slategray;
+            font-size: 3vh;
         }
 
         #numbers_buttons_area {
@@ -41,9 +42,9 @@
         .number_button, .decimal_button, .equate_button {
             height: 85px;
             width: 32%;
-            background-color: deeppink;
+            background-color: #3f51b5;
             margin: 2px;
-            font-size: 5vh;
+            font-size: 4vh;
         }
 
         #operator_buttons_area {
@@ -55,7 +56,11 @@
         .operator_button {
             width: 120px;
             height: 109px;
-            font-size: 5vh;
+            font-size: 4vh;
+        }
+
+        .equate_button {
+            font-size: 4vh;
         }
 
     </style>
@@ -64,7 +69,6 @@
     <script>
         /*--------Click handlers ready for functionality and sound effect--------*/
         $(document).ready(function(){
-            console.log('page loaded and ready');
             $('button').click(button_clicked);
             $('.btn').click(audio_on);
         });
@@ -74,27 +78,24 @@
         }
 
         /*-----Globals to help me keep track of the state that the application is in-----*/
-        var index = 0;
-        var inputs_array = [{
+        let index = 0;
+        let inputs_array = [{
             type: undefined,
             value: ''
         }];
-        var last_input = null;
+        let last_input = null;
 
         /*-----Directional switch statement that will direct key click to the proper function-----*/
         function button_clicked(){
-            var clicked_value = $(this).text();
+            let clicked_value = $(this).text();
             switch(clicked_value){
                 case 'C':
-                    console.log('clear all clicked');
                     delete_all();
                     break;
                 case 'CE':
-                    console.log('clear last entry');
                     delete_one();
                     break;
                 case '=':
-                    console.log('equal button hit');
                     equate();
                     break;
                 default:
@@ -137,14 +138,12 @@
                 //changing operator if one was input on the previous click
                 inputs_array[index - 1].value = string_value;
                 display(inputs_array[index-1]);
-                console.log("changing the operator");
             }
         }
 
         /*----------Runs when equal button is hit. Will redefine globals if necessary----------*/
         function equate() {
             if (inputs_array[index].value === '=' || inputs_array[index] === '1') {
-                console.log('equal button hit again.');
                 display(order_of_operation(string_to_float(last_input)));
                 index++;
                 new_obj();
@@ -164,7 +163,7 @@
 
         /*-----Based on operators entered does the appropriate calculations, only based on two numbers------*/
         function do_math(num1, num2, operator){
-            var result = null;
+            let result = null;
             switch(operator){
                 case 'x':
                     if(num2 === undefined){
@@ -194,7 +193,7 @@
 
         /*----------Clears entire global array and display nothing in display area----------*/
         function delete_all(){
-            var clear_all = {type: 'C'};
+            let clear_all = {type: 'C'};
             inputs_array = [];
             index = 0;
             new_obj();
@@ -217,7 +216,7 @@
 
         /*In each object there is a value that is a string and a type, if the type is number, converts the string under value into a string*/
         function string_to_float(array){
-            for(var i = 0; i < array.length; i++){
+            for(let i = 0; i < array.length; i++){
                 if(array[i].type === 'number'){
                     array[i].value = parseFloat(array[i].value);
                 }
@@ -229,20 +228,18 @@
         function display(obj){
             switch(obj.type){
                 case 'C':
-                    $("#output").text('');
-                    break;
+                    return $("#output").text('');
                 case 'number':
                 case 'operator':
-                    $("#output").text(obj.value);
-                    break;
+                    return $("#output").text(obj.value);
             }
         }
 
         /*-Searches for 'x' and '/' first to do that math then will come around again and do addition/subtraction-*/
         function order_of_operation(array){
-            var result = null;
+            let result = null;
             //search for  multi and division first
-            for(var i = 0; i < array.length; i++){
+            for(let i = 0; i < array.length; i++){
                 if (array[i].value == 'x' || array[i].value == '/') {
                     //grab num1, num2, and operator for do_math function
                     result = do_math(array[i - 1].value, array[i + 1].value, array[i].value);
@@ -257,16 +254,14 @@
                     array[i + 1].value = result;
                 }
             }
-            console.log("multiplication and division solved and condensed to new array: ", array);
 
             while(array.length > 2){
                 //breaks down long equation and does it piece by piece
-                var add_and_subtract = array.splice(0,3);
+                let add_and_subtract = array.splice(0,3);
                 add_and_subtract[0].value = do_math(add_and_subtract[0].value, add_and_subtract[2].value, add_and_subtract[1].value);
 
                 array.unshift(add_and_subtract[0]);
             }
-            console.log("Addition/Subtraction done: ", array, ' length: ', array.length);
             //floated numbers will have 10 decimal spots
             if(array[0].value % 1 !== 0){
                 array[0].value = array[0].value.toFixed(8);
