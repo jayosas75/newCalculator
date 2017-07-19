@@ -72,10 +72,19 @@
         $(document).ready(function(){
             $('button').click(button_clicked);
             $('.btn').click(audio_on);
+            applyKeyPressHandlers();
         });
 
         function audio_on(){
             $('.sound').trigger('play');
+        }
+
+        function applyKeyPressHandlers(){
+            $('.number_button').keypress(function(){
+                if(event.which === 13){
+                    console.log('Enter Button Hit');
+                }
+            })
         }
 
         /*-----Globals to help me keep track of the state that the application is in-----*/
